@@ -73,17 +73,25 @@ def orcamento():
         c.drawString(50, y, f"Valor: R$ {valor}")
         y -= 40
 
-        # 🔹 FOTO DO PRODUTO
-        if foto:
-            foto_path = "temp_foto.jpg"
-            foto.save(foto_path)
+       # 🔹 FOTO DO PRODUTO
+        if foto and foto.filename != "":
+            try:
+                from PIL import Image
+                import io
 
-            img = ImageReader(foto_path)
-            c.drawImage(img, 50, y - 200, width=300, height=200)
+                imagem = Image.open(foto.stream)
+                imagem = imagem.convert("RGB")
 
-            os.remove(foto_path)
+                temp_path = "temp_foto.jpg"
+                imagem.save(temp_path)
 
-        y -= 220
+                img = ImageReader(temp_path)
+                c.drawImage(img, 50, y - 200, width=300, height=200)
+
+                os.remove(temp_path)
+
+            except Exception as e:
+                print("Erro ao processar imagem:", e)
 
         # 🔹 CONDIÇÕES
         c.setFont("Helvetica", 12)
