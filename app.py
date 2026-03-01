@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, session, send_file
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
+from datetime import datetime
 import os
 
 app = Flask(__name__)
@@ -24,26 +25,76 @@ def orcamento():
         return redirect("/")
 
     if request.method == "POST":
-        nome = request.form["cliente"]
+
+        cliente = request.form["cliente"]
         endereco = request.form["endereco"]
+        equipamento = request.form["equipamento"]
+        tamanho = request.form["tamanho"]
+        cor = request.form["cor"]
+        descricao = request.form["descricao"]
         valor = request.form["valor"]
+        pagamento = request.form["pagamento"]
+        previsao = request.form["previsao"]
+
+        foto = request.files["foto"]
 
         pdf_path = "orcamento.pdf"
         c = canvas.Canvas(pdf_path, pagesize=A4)
         largura, altura = A4
 
-        # Logo fixa
+        # 🔹 LOGO FIXA
         if os.path.exists("static/logo.png"):
             logo = ImageReader("static/logo.png")
-            c.drawImage(logo, 0, altura - 120, width=largura, height=100)
+            c.drawImage(logo, 0, altura - 130, width=largura, height=110)
 
+        # 🔹 TÍTULO
         c.setFont("Helvetica-Bold", 18)
-        c.drawString(50, altura - 160, "Proposta Comercial")
+        c.drawCentredString(largura / 2, altura - 160, "Proposta Comercial")
 
+        # 🔹 DADOS
+        y = altura - 200
         c.setFont("Helvetica", 12)
-        c.drawString(50, altura - 200, f"Cliente: {nome}")
-        c.drawString(50, altura - 220, f"Endereço: {endereco}")
-        c.drawString(50, altura - 240, f"Valor: R$ {valor}")
+
+        c.drawString(50, y, f"Cliente: {cliente}")
+        y -= 25
+        c.drawString(50, y, f"Endereço: {endereco}")
+        y -= 25
+        c.drawString(50, y, f"Tipo de equipamento: {equipamento}")
+        y -= 25
+        c.drawString(50, y, f"Tamanho: {tamanho}")
+        y -= 25
+        c.drawString(50, y, f"Cor: {cor}")
+        y -= 25
+        c.drawString(50, y, f"Descrição: {descricao}")
+        y -= 35
+
+        # 🔹 VALOR DESTACADO
+        c.setFont("Helvetica-Bold", 14)
+        c.drawString(50, y, f"Valor: R$ {valor}")
+        y -= 40
+
+        # 🔹 FOTO DO PRODUTO
+        if foto:
+            foto_path = "temp_foto.jpg"
+            foto.save(foto_path)
+
+            img = ImageReader(foto_path)
+            c.drawImage(img, 50, y - 200, width=300, height=200)
+
+            os.remove(foto_path)
+
+        y -= 220
+
+        # 🔹 CONDIÇÕES
+        c.setFont("Helvetica", 12)
+        c.drawString(50, y, f"Condições de pagamento: {pagamento}")
+        y -= 25
+        c.drawString(50, y, f"Previsão de instalação: {previsao}")
+
+        # 🔹 ASSINATURA
+        y -= 60
+        c.line(50, y, 250, y)
+        c.drawString(50, y - 15, "Assinatura do responsável")
 
         c.save()
         return send_file(pdf_path, as_attachment=True)
