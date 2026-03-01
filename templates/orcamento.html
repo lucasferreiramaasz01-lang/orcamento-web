@@ -3,15 +3,25 @@
 <head>
     <title>Gerar Orçamento</title>
 </head>
-<body style="font-family:Arial; text-align:center; margin-top:50px;">
+<body style="font-family:Arial; text-align:center; margin-top:20px;">
 
     <h2>Gerar Proposta Comercial</h2>
 
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
 
-        <input type="text" name="cliente" placeholder="Nome do Cliente" required><br><br>
+        <input type="text" name="cliente" placeholder="Cliente" required><br><br>
         <input type="text" name="endereco" placeholder="Endereço" required><br><br>
+        <input type="text" name="equipamento" placeholder="Tipo de equipamento" required><br><br>
+        <input type="text" name="tamanho" placeholder="Tamanho" required><br><br>
+        <input type="text" name="cor" placeholder="Cor" required><br><br>
+        <input type="text" name="descricao" placeholder="Descrição" required><br><br>
         <input type="text" name="valor" placeholder="Valor" required><br><br>
+        <input type="text" name="pagamento" placeholder="Condições de pagamento" required><br><br>
+        <input type="text" name="previsao" placeholder="Previsão de instalação" required><br><br>
+
+        <br>
+        Foto do produto:<br>
+        <input type="file" name="foto" accept="image/*" required><br><br>
 
         <button type="submit">Gerar PDF</button>
 
