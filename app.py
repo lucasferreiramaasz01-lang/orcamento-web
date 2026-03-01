@@ -73,20 +73,35 @@ def orcamento():
         c.drawString(50, y, f"Valor: R$ {valor}")
         y -= 40
 
-       # 🔹 FOTO DO PRODUTO
+        # 🔹 FOTO DO PRODUTO (ÁREA FIXA)
         if foto and foto.filename != "":
             try:
-                from PIL import Image
-                import io
+                from PIL import Image, ImageOps
 
                 imagem = Image.open(foto.stream)
+
+                # Corrige rotação automática do celular
+                imagem = ImageOps.exif_transpose(imagem)
+
                 imagem = imagem.convert("RGB")
+
+                # Redimensiona mantendo proporção
+                max_largura = 300
+                max_altura = 200
+                imagem.thumbnail((max_largura, max_altura))
 
                 temp_path = "temp_foto.jpg"
                 imagem.save(temp_path)
 
                 img = ImageReader(temp_path)
-                c.drawImage(img, 50, y - 200, width=300, height=200)
+
+                # POSIÇÃO FIXA (não depende do texto)
+                pos_x = 50
+                pos_y = 250  # altura fixa da imagem
+
+                c.drawImage(img, pos_x, pos_y,
+                            width=imagem.width,
+                            height=imagem.height)
 
                 os.remove(temp_path)
 
